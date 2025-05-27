@@ -22,6 +22,13 @@ postgres:
   port: 5432
   db: metastore
 
+s3:
+  access_key: ""
+  secret_key: ""
+  endpoint: ""
+  path_style_access: ""
+  
+
 serviceAccount:
   # Specifies whether a service account should be created
   create: true

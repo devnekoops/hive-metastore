@@ -53,6 +53,14 @@ spec:
                 secretKeyRef:
                   key: password
                   name: {{ .Release.Name }}-pgauth
+            - name: S3_ACCESS_KEY
+              value: "{{ .Values.s3.access_key }}"
+            - name: S3_SECRET_KEY
+              value: "{{ .Values.s3.secret_key }}"
+            - name: S3_ENDPOINT
+              value: "{{ .Values.s3.endpoint }}"
+            - name: S3_PATH_STYLE_ACCESS
+              value: "{{ .Values.s3.path_style_access }}"
           ports:
             - name: thrift
               containerPort: {{ .Values.service.port }}
