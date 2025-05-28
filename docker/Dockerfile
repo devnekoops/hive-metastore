@@ -3,6 +3,9 @@ FROM amazoncorretto:8u442-alpine3.21-jre
 ARG HADOOP_VERSION=3.4.1
 ARG HIVE_METASTORE_VERSION=3.0.0
 ARG POSTGRES_CONNECTOR_VERSION=42.7.2
+ARG HADOOP_AWS_VERSION=3.3.6
+ARG AWS_JAVA_SDK_VERSION=1.12.669
+ARG TEZ_VERSION=0.10.3
 
 WORKDIR /app
 #SHELL ["/bin/bash", "-o", "pipefail", "-c"]
@@ -57,6 +60,12 @@ RUN rm /opt/hadoop-3.4.1/share/hadoop/yarn/timelineservice/lib/htrace-core-3.1.0
 RUN rm /opt/hadoop-3.4.1/share/hadoop/client/hadoop-client-runtime-3.4.1.jar
 RUN rm /opt/hadoop-3.4.1/share/hadoop/yarn/hadoop-yarn-applications-catalog-webapp-3.4.1.war
 
+RUN echo "Download and install S3 dependencies" && \
+    curl -L https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-aws/$HADOOP_AWS_VERSION/hadoop-aws-$HADOOP_AWS_VERSION.jar --output /opt/hadoop/hadoop-aws-$HADOOP_AWS_VERSION.jar &&\
+    curl -L https://repo1.maven.org/maven2/com/amazonaws/aws-java-sdk-bundle/$AWS_JAVA_SDK_VERSION/aws-java-sdk-bundle-$AWS_JAVA_SDK_VERSION.jar --output /opt/hadoop/aws-java-sdk-bundle-$AWS_JAVA_SDK_VERSION.jar &&\
+    curl https://archive.apache.org/dist/tez/$TEZ_VERSION/apache-tez-$TEZ_VERSION-bin.tar.gz  \
+    | tar xvz -C /opt/tez 
+
 RUN apk add --no-cache bash
 
 COPY hive-site.xml hive-site_TEMPLATE.xml
@@ -69,6 +78,7 @@ ENV METASTORE_PORT=9083
 ENV DATABASE_DRIVER=org.postgresql.Driver
 ENV DATABASE_TYPE=postgres
 ENV DATABASE_TYPE_JDBC=postgresql
+ENV TEZ_HOME=/opt/tez
 # ENV DATABASE_PORT=5432
 # ENV DATABASE_USER=admin
 # ENV DATABASE_PASSWORD=pass
